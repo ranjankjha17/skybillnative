@@ -20,12 +20,8 @@ export const Login = () => {
     };
     const handleSubmit = async () => {
         if (formData.username && formData.password) {
-            const headers = {
-                Accept: 'application/json',
-            };
             try {
-                const response = await axios.post('https://skybillserver.vercel.app/login', formData, { headers }
-                );
+                const response = await axios.post('https://skybillserver.vercel.app/login', formData);
                 const { data } = response;
                 const { success, message, token, username } = data;
                 if (success) {
