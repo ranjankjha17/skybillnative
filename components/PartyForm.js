@@ -162,9 +162,9 @@ export const PartyForm = (props) => {
     // Add agrnumber, farmername, and totalbags
     htmlContent += `
     <div style="font-size:1px;">
-         <div style="display: flex; justify-content: space-between;"><p>AGR NUMBER</p> <p>${data[0].agrnumber}</p></div>
-         <div style="display: flex; justify-content: space-between;"><p>FARMER NAME</p> <p>${data[0].farmername}</p></div>
-         <div style="display: flex; justify-content: space-between;"><p>TOTAL BAGS</p> <p>${data[0].totalbags}</p></div>
+         <div style="display: flex; justify-content: space-between;"><p>AGR Number</p> <p>${data[0].agrnumber}</p></div>
+         <div style="display: flex; justify-content: space-between;"><p>Farmer Name</p> <p>${data[0].farmername}</p></div>
+         <div style="display: flex; justify-content: space-between;"><p>Total Bags</p> <p>${data[0].totalbags}</p></div>
          <div style="border-bottom: 1px solid black;"></div>
     </div>
   `;
@@ -173,17 +173,17 @@ export const PartyForm = (props) => {
     organizedData.forEach((entry, index) => {
       htmlContent += `
       <div style="margin-bottom: 2px;font-size:1px;border-bottom: 1px solid black;">
-      <div style="display: flex; justify-content: space-between;"><p>PARTY NAME :</p> <p>${entry.partyname}</p></div>
-      <div style="display: flex; justify-content: space-between;"><p>RATE :</p> <p>${entry.rate}</p></div>
-      <div style="display: flex; justify-content: space-between;"><p>QUANTITY :</p> <p>${entry.quantity.join(' ')}</p></div>
-      <div style="display: flex; justify-content: space-between;"><p>TOTAL :</p> <p>${entry.totalquantity}</p></div>
+      <div style="display: flex; justify-content: space-between;"><p>Party Name :</p> <p>${entry.partyname}</p></div>
+      <div style="display: flex; justify-content: space-between;"><p>Rate :</p> <p>${entry.rate}</p></div>
+      <div style="display: flex; justify-content: space-between;"><p>Quantity :</p> <p>${entry.quantity.join(' ')}</p></div>
+      <div style="display: flex; justify-content: space-between;"><p>Total :</p> <p>${entry.totalquantity}</p></div>
       </div>`;
     });
 
     // Add remaining quantity
     htmlContent += `
     <div style="font-size:1px;">
-      <div style="display: flex; justify-content: space-between;"><p>REMAINING QUANTITY</p> <p>${remainingQuantity}</p></div>
+      <div style="display: flex; justify-content: space-between;"><p>Remaining Quantity</p> <p>${remainingQuantity}</p></div>
     </div>
   `;
 
