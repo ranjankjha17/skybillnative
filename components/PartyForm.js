@@ -175,8 +175,14 @@ export const PartyForm = (props) => {
       <div style="margin-bottom: 2px;font-size:1px;border-bottom: 1px solid black;">
       <div style="display: flex; justify-content: space-between;"><p>Party Name :</p> <p>${entry.partyname}</p></div>
       <div style="display: flex; justify-content: space-between;"><p>Rate :</p> <p>${entry.rate}</p></div>
-      <div style="display: flex; justify-content: space-between;"><p>Quantity :</p> <p>${entry.quantity.join(' ')}</p></div>
-      <div style="display: flex; justify-content: space-between;"><p>Total :</p> <p>${entry.totalquantity}</p></div>
+      <div style="display: flex; flex-wrap: wrap;">
+      <p style="margin-right: 1px;">Quantity:</p>
+      ${entry.quantity.map((qty, index) => (
+        `<p style="margin-left: 22px;">${qty}</p>${(index + 1) % 4 === 0 ? '<br />' : ''}`
+        
+      )).join('')}
+    </div>
+          <div style="display: flex; justify-content: space-between;"><p>Total :</p> <p>${entry.totalquantity}</p></div>
       </div>`;
     });
 
