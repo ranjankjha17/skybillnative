@@ -88,7 +88,7 @@ export const Home = (props) => {
                 Accept: 'application/json',
             };
 
-            console.log(formData)
+            // console.log(formData)
 
             try {
                 const response = await axios.post('https://skybillserver.vercel.app/create-bill', formData, { headers }
@@ -158,43 +158,43 @@ export const Home = (props) => {
 
     return (
         <View>
-            <ScrollView contentContainerStyle={styles.container}>
-                <View style={styles.headingContainer}>
-                    <Text style={{ ...styles.heading, flex: 1 }}>Form</Text>
-                    <View style={{ ...styles.buttonContainer, flex: 1 }}>
-                        <TouchableOpacity style={styles.button} onPress={handleNewBill} >
-                            <Text style={styles.buttonText}>New Bill</Text>
+            <ScrollView contentContainerStyle={HomeStyles.container}>
+                <View style={HomeStyles.headingContainer}>
+                    <Text style={{ ...HomeStyles.heading, flex: 1 }}>Form</Text>
+                    <View style={{ ...HomeStyles.buttonContainer, flex: 1 }}>
+                        <TouchableOpacity style={HomeStyles.button} onPress={handleNewBill} >
+                            <Text style={HomeStyles.buttonText}>New Bill</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.codeContainer}>
+                <View style={HomeStyles.codeContainer}>
                     <Text style={{ flex: 1, fontWeight: "500" }}>DATE : {formData.date}</Text>
                     <Text style={{ flex: 1, fontWeight: "500" }}>TIME : {formData.time}</Text>
                 </View>
-                <View style={styles.codeContainer}>
+                <View style={HomeStyles.codeContainer}>
                     <Text style={{ flex: 1, fontWeight: "500" }}>Serial Number : {formData.serialnumber}</Text>
                 </View>
                 <TextInput
-                    style={styles.input}
+                    style={HomeStyles.input}
                     placeholder="AGR Number"
                     onChangeText={(text) => handleChange('agrnumber', text)}
                     value={formData.agrnumber}
                 />
                 <TextInput
-                    style={styles.input}
+                    style={HomeStyles.input}
                     placeholder="Farmer Name"
                     onChangeText={(text) => handleChange('farmername', text)}
                     value={formData.farmername}
                 />
                 <TextInput
-                    style={styles.input}
+                    style={HomeStyles.input}
                     placeholder="Bags"
                     onChangeText={(text) => handleChange('bags', text)}
                     value={formData.bags}
                 />
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                        <Text style={styles.buttonText}>Save</Text>
+                <View style={HomeStyles.buttonContainer}>
+                    <TouchableOpacity style={HomeStyles.button} onPress={handleSubmit}>
+                        <Text style={HomeStyles.buttonText}>Save</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -202,13 +202,12 @@ export const Home = (props) => {
     )
 }
 
-const styles = StyleSheet.create({
+const HomeStyles = StyleSheet.create({
     container: {
         flexGrow: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-        // padding: 16,
         paddingLeft: 16,
         paddingRight: 16,
         paddingTop: 1,
@@ -216,7 +215,6 @@ const styles = StyleSheet.create({
     },
     heading: {
         fontSize: 18,
-        //fontWeight: 'bold',
         marginBottom: 20,
         color: '#1C2833',
         fontWeight: '700',
@@ -239,9 +237,6 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     buttonContainer: {
-        // marginTop: 15,
-        //justifyContent: 'flex-start',
-        // alignItems: "flex-start",
         flexDirection: "row",
         width: '100%',
     },
@@ -249,7 +244,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#145A32',
         padding: 10,
         borderRadius: 5,
-        // marginTop: 10,
         flex: 1,
         marginRight: 5,
     },
@@ -259,42 +253,12 @@ const styles = StyleSheet.create({
         fontWeight: "500"
     },
 
-    photoContainer: {
-        flexDirection: 'column',
-        // justifyContent: 'space-between',
-        width: '100%',
-    },
-
-    photoPreview: {
-        width: 200,
-        height: 200,
-        marginTop: 10,
-    },
-    pickerContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-        marginBottom: 10,
-    },
-    label: {
-        fontSize: 16,
-        marginBottom: 8,
-    },
-    picker: {
-        width: '55%',
-        height: 40,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-    },
     codeContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
         width: '100%',
         marginBottom: 10,
-
     }
 
 });

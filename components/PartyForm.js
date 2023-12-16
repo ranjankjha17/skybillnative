@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, ScrollView, TextInput } from 'react-native';
-import { PartyFormList } from './PartyFormList';
 import { useDispatch, useSelector } from 'react-redux';
 import { addStudent, resetStudents } from '../reducers/temp_order';
 import uuid from 'react-native-uuid';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loadBill } from '../reducers/bill';
-import { generateHTMLContent, getPrintBill } from './services/PrintService';
+import { getPrintBill } from './services/PrintService';
 import * as Print from 'expo-print';
 
 export const PartyForm = (props) => {
   const { username } = props
   const bill = useSelector(state => state.bill.bill);
-  console.log('bill', bill)
   const students = useSelector(state => state.tempOrder.students);
   const dispatch = useDispatch()
   const uuidValue = uuid.v4();
@@ -63,23 +61,19 @@ export const PartyForm = (props) => {
       partyformData['rowid'] = rowId
       partyformData['agrnumber'] = bill[0] ? bill[0].agrnumber : ''
       partyformData['serialnumber'] = bill[0] ? bill[0].serialnumber : ''
-
-      console.log(partyformData)
-      dispatch(addStudent(partyformData));
+     dispatch(addStudent(partyformData));
       // setpartyFormData({
       //   quantity: '',
 
       // })
       alert('your data is sent to list')
-
     } else {
       alert("Please fill all the field")
-
     }
   }
   const handleSaveData = async () => {
     if (students.length > 0) {
-      console.log(students)
+      //console.log(students)
       const headers = {
         Accept: 'application/json',
       };
@@ -92,7 +86,6 @@ export const PartyForm = (props) => {
         if (success) {
           dispatch(resetStudents())
           AsyncStorage.removeItem('students');
-
           setpartyFormData({
             partyname: '',
             rate: '',
@@ -108,15 +101,11 @@ export const PartyForm = (props) => {
 
           console.error('Error response data:', error.response?.data);
           console.error('Error status:', error.response?.status);
-
         }
-
       }
-
     } else {
       alert("Your Party Quantity Details is Empty")
     }
-
   }
 
   const generateHTMLContent = (data) => {
@@ -197,11 +186,9 @@ export const PartyForm = (props) => {
   };
 
   const handlePrint = async () => {
-
     try {
       if (bill[0]?.agrnumber) {
         const printBillData = await getPrintBill(bill[0]?.agrnumber)
-        //  console.log('printbill', printBillData)
         const htmlContent = generateHTMLContent(printBillData);
         await Print.printAsync({ html: htmlContent });
       }else{
@@ -215,63 +202,60 @@ export const PartyForm = (props) => {
 
   return (
     <View>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* <Text style={styles.heading}>Party Form</Text> */}
+      <ScrollView contentContainerStyle={PartyFormStyles.container}>
+        {/* <Text style={PartyFormStyles.heading}>Party Form</Text> */}
         <TextInput
-          style={styles.input}
+          style={PartyFormStyles.input}
           placeholder="Party Name"
           onChangeText={(text) => handleChange('partyname', text)}
           value={partyformData.partyname}
         />
         <TextInput
-          style={styles.input}
+          style={PartyFormStyles.input}
           placeholder="Rate"
           onChangeText={(text) => handleChange('rate', text)}
           value={partyformData.rate}
         />
         <TextInput
-          style={styles.input}
+          style={PartyFormStyles.input}
           placeholder="Quantity"
           onChangeText={(text) => handleChange('quantity', text)}
           value={partyformData.quantity}
         />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Add</Text>
+        <View style={PartyFormStyles.buttonContainer}>
+          <TouchableOpacity style={PartyFormStyles.button} onPress={handleSubmit}>
+            <Text style={PartyFormStyles.buttonText}>Add</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleSaveData} >
-            <Text style={styles.buttonText}>New Party</Text>
+          <TouchableOpacity style={PartyFormStyles.button} onPress={handleSaveData} >
+            <Text style={PartyFormStyles.buttonText}>New Party</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handlePrint} >
-            <Text style={styles.buttonText}>Print</Text>
+          <TouchableOpacity style={PartyFormStyles.button} onPress={handlePrint} >
+            <Text style={PartyFormStyles.buttonText}>Print</Text>
           </TouchableOpacity>
-
         </View>
       </ScrollView>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+const PartyFormStyles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    // padding: 16,
     paddingLeft: 16,
     paddingRight: 16,
     paddingBottom: 5,
     paddingTop: 10,
 
   },
-  heading: {
-    fontSize: 18,
-    //fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#1C2833',
-    fontWeight: '700',
-  },
+  // heading: {
+  //   fontSize: 18,
+  //   marginBottom: 20,
+  //   color: '#1C2833',
+  //   fontWeight: '700',
+  // },
 
   input: {
     height: 40,
@@ -301,44 +285,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: "500"
   },
-
-  photoContainer: {
-    flexDirection: 'column',
-    // justifyContent: 'space-between',
-    width: '100%',
-  },
-
-  photoPreview: {
-    width: 200,
-    height: 200,
-    marginTop: 10,
-  },
-  pickerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  picker: {
-    width: '55%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-  codeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 10,
-
-  }
-
 });
 
