@@ -9,6 +9,8 @@ import { logout } from '../reducers/login';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { PrintForm } from '../components/PrintForm';
+import { resetBill } from '../reducers/bill';
+import { resetStudents } from '../reducers/temp_order';
 
 export const Dashboard = () => {
   const navigation = useNavigation();
@@ -22,8 +24,8 @@ export const Dashboard = () => {
     try {
       await AsyncStorage.removeItem('auth');
       dispatch(logout())
-      // dispatch(resetBill())
-      //ispatch(resetStudents())
+      dispatch(resetBill())
+      dispatch(resetStudents())
       navigation.navigate('Login');
     } catch (error) {
       console.error('Error handling new bill:', error);

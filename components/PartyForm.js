@@ -24,7 +24,9 @@ export const PartyForm = (props) => {
     partyname: '',
     rate: '',
     quantity: '',
-    username: username
+    username: username,
+    agrnumber: '',
+    serialnumber: '',
   });
   const handleChange = (field, value) => {
     setpartyFormData({
@@ -57,97 +59,108 @@ export const PartyForm = (props) => {
   }, [partyformData.partyname]);
 
   const handleSubmit = () => {
-    partyformData['rowid'] = rowId
-    partyformData['agrnumber'] = bill[0] ? bill[0].agrnumber : ''
-    partyformData['serialnumber'] = bill[0] ? bill[0].serialnumber : ''
+    if (partyformData.partyname && partyformData.rate && partyformData.quantity) {
+      partyformData['rowid'] = rowId
+      partyformData['agrnumber'] = bill[0] ? bill[0].agrnumber : ''
+      partyformData['serialnumber'] = bill[0] ? bill[0].serialnumber : ''
 
-    console.log(partyformData)
-    dispatch(addStudent(partyformData));
-    // setpartyFormData({
-    //   quantity: '',
+      console.log(partyformData)
+      dispatch(addStudent(partyformData));
+      // setpartyFormData({
+      //   quantity: '',
 
-    // })
-    alert('your data is sent to list')
+      // })
+      alert('your data is sent to list')
+
+    } else {
+      alert("Please fill all the field")
+
+    }
   }
   const handleSaveData = async () => {
-    console.log(students)
-    const headers = {
-      Accept: 'application/json',
-    };
+    if (students.length > 0) {
+      console.log(students)
+      const headers = {
+        Accept: 'application/json',
+      };
 
-    try {
-      const response = await axios.post('http://172.24.0.168:5000/create-party', students, { headers }
-      );
-      const { data } = response;
-      const { success, message } = data;
-      if (success) {
-        dispatch(resetStudents())
-        AsyncStorage.removeItem('students');
+      try {
+        const response = await axios.post('https://skybillserver.vercel.app/create-party', students, { headers }
+        );
+        const { data } = response;
+        const { success, message } = data;
+        if (success) {
+          dispatch(resetStudents())
+          AsyncStorage.removeItem('students');
 
-        setpartyFormData({
-          partyname: '',
-          rate: '',
-        });
-        alert("Your form data is saved")
+          setpartyFormData({
+            partyname: '',
+            rate: '',
+          });
+          alert("Your form data is saved")
+        }
+      } catch (error) {
+        if (axios.isCancel(error)) {
+          console.log('Request canceled:', error.message);
+        } else {
+          console.error('Error submitting form1:', error);
+          console.error('Full error object:', error);
+
+          console.error('Error response data:', error.response?.data);
+          console.error('Error status:', error.response?.status);
+
+        }
+
       }
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log('Request canceled:', error.message);
-      } else {
-        console.error('Error submitting form1:', error);
-        console.error('Full error object:', error);
 
-        console.error('Error response data:', error.response?.data);
-        console.error('Error status:', error.response?.status);
-
-      }
-
+    } else {
+      alert("Your Party Quantity Details is Empty")
     }
 
   }
 
-const generateHTMLContent = (data) => {
-  // Initialize htmlContent outside the loop
-  let htmlContent = '';
+  const generateHTMLContent = (data) => {
+    // Initialize htmlContent outside the loop
+    let htmlContent = '';
+    //console.log("printdata",data)
+    const organizedData = data.reduce((acc, entry) => {
+      const { partyname, quantity, rate, agrnumber, farmername, totalbags } = entry;
+      const existingEntry = acc.find((item) => item.partyname === partyname);
 
-  const organizedData = data.reduce((acc, entry) => {
-    const { partyname, quantity, rate, agrnumber, farmername, totalbags } = entry;
-    const existingEntry = acc.find((item) => item.partyname === partyname);
+      if (existingEntry) {
+        existingEntry.quantity.push(quantity);
+        existingEntry.totalquantity += parseInt(quantity, 10); // Update totalquantity
+      } else {
+        acc.push({
+          partyname,
+          quantity: [quantity],
+          totalquantity: parseInt(quantity, 10),
+          rate,
+        });
+      }
 
-    if (existingEntry) {
-      existingEntry.quantity.push(quantity);
-      existingEntry.totalquantity += parseInt(quantity, 10); // Update totalquantity
-    } else {
-      acc.push({
-        partyname,
-        quantity: [quantity],
-        totalquantity: parseInt(quantity, 10),
-        rate,
-      });
-    }
+      return acc;
+    }, []);
+    // Calculate remaining quantity
+    const totalBags = parseInt(data[0].totalbags, 10);
+    const totalQuantitySum = organizedData.reduce((sum, entry) => sum + entry.totalquantity, 0);
+    const remainingQuantity = totalBags - totalQuantitySum;
 
-    return acc;
-  }, []);
-  // Calculate remaining quantity
-  const totalBags = parseInt(data[0].totalbags, 10);
-  const totalQuantitySum = organizedData.reduce((sum, entry) => sum + entry.totalquantity, 0);
-  const remainingQuantity = totalBags - totalQuantitySum;
+    // Get current date and time
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}/${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
+    const formattedTime = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
 
-  // Get current date and time
-  const currentDate = new Date();
-  const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}/${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
-  const formattedTime = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
-
-  // Add current date and time in the first line
-  htmlContent += `
+    // Add current date and time in the first line
+    htmlContent += `
     <div style="display: flex; justify-content: space-between;font-size:1px;">
-      <div style="display: flex; justify-content: space-between;"><p>DATE</p> <p>${formattedDate}</p></div>
-      <div style="display: flex; justify-content: space-between;"><p>TIME</p> <p>${formattedTime}</p></div>
+      <div style="display: flex; justify-content: space-between;"><p>Date</p> <p>${formattedDate}</p></div>
+      <div style="display: flex; justify-content: space-between;"><p>Time</p> <p>${formattedTime}</p></div>
     </div>
   `;
 
-  // Add agrnumber, farmername, and totalbags
-  htmlContent += `
+    // Add agrnumber, farmername, and totalbags
+    htmlContent += `
     <div style="font-size:1px;">
          <div style="display: flex; justify-content: space-between;"><p>AGR NUMBER</p> <p>${data[0].agrnumber}</p></div>
          <div style="display: flex; justify-content: space-between;"><p>FARMER NAME</p> <p>${data[0].farmername}</p></div>
@@ -156,16 +169,16 @@ const generateHTMLContent = (data) => {
     </div>
   `;
 
-  // Use forEach instead of map, and append to htmlContent directly
-  organizedData.forEach((entry, index) => {
-    htmlContent += `
+    // Use forEach instead of map, and append to htmlContent directly
+    organizedData.forEach((entry, index) => {
+      htmlContent += `
       <div style="margin-bottom: 2px;font-size:1px;border-bottom: 1px solid black;">
       <div style="display: flex; justify-content: space-between;"><p>PARTY NAME :</p> <p>${entry.partyname}</p></div>
       <div style="display: flex; justify-content: space-between;"><p>RATE :</p> <p>${entry.rate}</p></div>
       <div style="display: flex; justify-content: space-between;"><p>QUANTITY :</p> <p>${entry.quantity.join(' ')}</p></div>
       <div style="display: flex; justify-content: space-between;"><p>TOTAL :</p> <p>${entry.totalquantity}</p></div>
       </div>`;
-  });
+    });
 
     // Add remaining quantity
     htmlContent += `
@@ -174,15 +187,21 @@ const generateHTMLContent = (data) => {
     </div>
   `;
 
-  return htmlContent;
-};
+    return htmlContent;
+  };
 
   const handlePrint = async () => {
+
     try {
-      const printBillData = await getPrintBill()
-      //console.log('printbill', printBillData)
-      const htmlContent = generateHTMLContent(printBillData);
-      await Print.printAsync({ html: htmlContent });
+      if (bill[0]?.agrnumber) {
+        const printBillData = await getPrintBill(bill[0]?.agrnumber)
+        //  console.log('printbill', printBillData)
+        const htmlContent = generateHTMLContent(printBillData);
+        await Print.printAsync({ html: htmlContent });
+      }else{
+        alert("Please, Input AGRNumber")
+      }
+
     } catch (error) {
       console.error('Error printing:', error.messge);
     }

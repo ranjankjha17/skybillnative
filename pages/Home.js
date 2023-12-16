@@ -9,8 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import { resetStudents } from '../reducers/temp_order';
 
 export const Home = (props) => {
-    const {username}=props
-   // console.log(username)
+    const { username } = props
+    // console.log(username)
     const navigation = useNavigation();
     const dispatch = useDispatch()
     const bill = useSelector(state => state.bill.bill);
@@ -54,7 +54,7 @@ export const Home = (props) => {
     };
     const getSerialNumber = async () => {
         try {
-            const { data } = await axios.get('http://172.24.0.168:5000/get-serialnumber')
+            const { data } = await axios.get('https://skybillserver.vercel.app/get-serialnumber')
             // console.log(data.data)
             const serialnumber = await data.data
             setFormData((prevData) => ({
@@ -74,7 +74,7 @@ export const Home = (props) => {
         bags: '',
         date: getCurrentDate(),
         time: getCurrentTime(),
-        username:username,
+        username: username,
     });
     const handleChange = (field, value) => {
         setFormData({
@@ -83,48 +83,53 @@ export const Home = (props) => {
         });
     };
     const handleSubmit = async () => {
-        const headers = {
-            Accept: 'application/json',
-        };
+        if (formData.agrnumber && formData.farmername && formData.bags) {
+            const headers = {
+                Accept: 'application/json',
+            };
 
-        console.log(formData)
+            console.log(formData)
 
-        try {
-            const response = await axios.post('http://172.24.0.168:5000/create-bill', formData, { headers }
-            );
+            try {
+                const response = await axios.post('https://skybillserver.vercel.app/create-bill', formData, { headers }
+                );
 
 
-            const { data } = response;
-            const { success, message } = data;
+                const { data } = response;
+                const { success, message } = data;
 
-            if (success) {
-                dispatch(addBill(formData))
-                setFormData({
-                    farmername: '',
-                    bags: '',
-                    agrnumber:''
-                });
-                alert("Your form data is saved")
+                if (success) {
+                    dispatch(addBill(formData))
+                    setFormData({
+                        farmername: '',
+                        bags: '',
+                        agrnumber: ''
+                    });
+                    alert("Your form data is saved")
+                }
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                    console.log('Request canceled:', error.message);
+                } else {
+                    console.error('Error submitting form1:', error);
+                    console.error('Full error object:', error);
+
+                    console.error('Error response data:', error.response?.data);
+                    console.error('Error status:', error.response?.status);
+
+                }
+
             }
-        } catch (error) {
-            if (axios.isCancel(error)) {
-                console.log('Request canceled:', error.message);
-            } else {
-                console.error('Error submitting form1:', error);
-                console.error('Full error object:', error);
 
-                console.error('Error response data:', error.response?.data);
-                console.error('Error status:', error.response?.status);
 
-            }
-
+        } else {
+            alert("Please fill all the field")
         }
-
     }
     // useEffect(() => {
 
     // }, [username])
-  
+
     useEffect(() => {
         loadStoredBill();
         getSerialNumber()
@@ -141,21 +146,22 @@ export const Home = (props) => {
 
     const handleNewBill = async () => {
         try {
-          await AsyncStorage.removeItem('bill');
-          dispatch(resetBill())
-          dispatch(resetStudents())
-          navigation.navigate('Home');
+            await AsyncStorage.removeItem('bill');
+            dispatch(resetBill())
+            dispatch(resetStudents())
+            alert("Create a New Bill")
+            navigation.navigate('Home');
         } catch (error) {
-          console.error('Error handling new bill:', error);
+            console.error('Error handling new bill:', error);
         }
-      };
-      
+    };
+
     return (
         <View>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.headingContainer}>
                     <Text style={{ ...styles.heading, flex: 1 }}>Form</Text>
-                    <View style={{...styles.buttonContainer,flex:1}}>
+                    <View style={{ ...styles.buttonContainer, flex: 1 }}>
                         <TouchableOpacity style={styles.button} onPress={handleNewBill} >
                             <Text style={styles.buttonText}>New Bill</Text>
                         </TouchableOpacity>
@@ -203,10 +209,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         // padding: 16,
-        paddingLeft:16,
-        paddingRight:16,
-        paddingTop:1,
-        paddingBottom:1,       
+        paddingLeft: 16,
+        paddingRight: 16,
+        paddingTop: 1,
+        paddingBottom: 1,
     },
     heading: {
         fontSize: 18,
@@ -224,19 +230,19 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingLeft: 10,
         width: '100%',
-        fontWeight: "500"        
+        fontWeight: "500"
     },
     headingContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-    marginBottom:5,
+        marginBottom: 5,
     },
     buttonContainer: {
         // marginTop: 15,
-       //justifyContent: 'flex-start',
-       // alignItems: "flex-start",
-       flexDirection:"row",
+        //justifyContent: 'flex-start',
+        // alignItems: "flex-start",
+        flexDirection: "row",
         width: '100%',
     },
     button: {

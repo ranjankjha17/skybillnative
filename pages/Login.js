@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import {  Alert,StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import {login} from '../reducers/login';
+import { login } from '../reducers/login';
 
 export const Login = () => {
-    const dispatch=useDispatch()
+    const dispatch = useDispatch()
     const navigation = useNavigation();
     const [formData, setFormData] = useState({
         username: 'spyder',
@@ -20,68 +20,73 @@ export const Login = () => {
         });
     };
     const handleSubmit = async () => {
-        const headers = {
-            Accept: 'application/json',
-        };
+        if (formData.username && formData.password) {
+            const headers = {
+                Accept: 'application/json',
+            };
 
-        console.log(formData)
+            console.log(formData)
 
-        try {
-            const response = await axios.post('http://172.24.0.168:5000/login', formData, { headers }
-            );
-            const { data } = response;
-            const { success, message,token,username } = data;
-            if (success) {
-                dispatch(login(username))
-                navigation.navigate('Home');
-                // setFormData({
-                //     username: '',
-                //     password: '',
-                // });
-                //alert('Success', 'You are logged in successfully');
+            try {
+                const response = await axios.post('https://skybillserver.vercel.app/login', formData, { headers }
+                );
+                const { data } = response;
+                const { success, message, token, username } = data;
+                if (success) {
+                    dispatch(login(username))
+                    navigation.navigate('Home');
+                    // setFormData({
+                    //     username: '',
+                    //     password: '',
+                    // });
+                    //alert('Success', 'You are logged in successfully');
 
-            } else {
-                alert('Error', message || 'Login failed');
+                } else {
+                    alert('Error', message || 'Login failed');
+                }
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                    console.log('Request canceled:', error.message);
+                } else {
+                    console.error('Error submitting form1:', error);
+                    console.error('Full error object:', error);
+
+                    console.error('Error response data:', error.response?.data);
+                    console.error('Error status:', error.response?.status);
+
+                }
+
             }
-        } catch (error) {
-            if (axios.isCancel(error)) {
-                console.log('Request canceled:', error.message);
-            } else {
-                console.error('Error submitting form1:', error);
-                console.error('Full error object:', error);
 
-                console.error('Error response data:', error.response?.data);
-                console.error('Error status:', error.response?.status);
-
-            }
-
+        } else {
+            alert("Please fill UserName and Password")
         }
 
     }
 
     return (
-            <ScrollView contentContainerStyle={styles.container}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="UserName"
-                    onChangeText={(text) => handleChange('username', text)}
-                    value={formData.username}
-                // defaultValue='spyder'
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    secureTextEntry={true}
-                    onChangeText={(text) => handleChange('password', text)}
-                    value={formData.password}
-                //defaultValue='spyder'
-                />
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
+        <ScrollView contentContainerStyle={styles.container}>
+            <TextInput
+                style={styles.input}
+                placeholder="UserName"
+                onChangeText={(text) => handleChange('username', text)}
+                value={formData.username}
+            // defaultValue='spyder'
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Password"
+                secureTextEntry={true}
+                onChangeText={(text) => handleChange('password', text)}
+                value={formData.password}
+            //defaultValue='spyder'
+            />
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
     )
 }
 
