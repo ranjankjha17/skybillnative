@@ -111,11 +111,9 @@ export const PartyForm = (props) => {
   const generateHTMLContent = (data) => {
     // Initialize htmlContent outside the loop
     let htmlContent = '';
-    //console.log("printdata",data)
     const organizedData = data.reduce((acc, entry) => {
       const { partyname, quantity, rate, agrnumber, farmername, totalbags } = entry;
       const existingEntry = acc.find((item) => item.partyname === partyname);
-
       if (existingEntry) {
         existingEntry.quantity.push(quantity);
         existingEntry.totalquantity += parseInt(quantity, 10); // Update totalquantity
@@ -133,9 +131,11 @@ export const PartyForm = (props) => {
     // Calculate remaining quantity
     const totalBags = parseInt(data[0].totalbags, 10);
     const totalQuantitySum = organizedData.reduce((sum, entry) => sum + entry.totalquantity, 0);
-    const remainingQuantity = totalBags - totalQuantitySum;
-
-    // Get current date and time
+    const totalQuantityLength = organizedData.reduce((total, entry) => {
+      return total + entry.quantity.length;
+    }, 0);
+    const remainingQuantity = totalBags-totalQuantityLength
+     // Get current date and time
     const currentDate = new Date();
     const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}/${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
     const formattedTime = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
@@ -178,6 +178,7 @@ export const PartyForm = (props) => {
     // Add remaining quantity
     htmlContent += `
     <div style="font-size:1px;">
+    <div style="display: flex; justify-content: space-between;"><p>Total</p> <p>${totalQuantitySum}</p></div>
       <div style="display: flex; justify-content: space-between;"><p>Remaining Quantity</p> <p>${remainingQuantity}</p></div>
     </div>
   `;
